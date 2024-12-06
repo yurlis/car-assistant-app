@@ -12,7 +12,7 @@
     <artifactId>car-assistant</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Car Assistant Application</name>
-    <description>A tool to assist car owners in managing their vehicle service history, refueling logs, and reminders.</description>
+    <description>A part of the Car Assistant App, this API helps car owners manage their vehicle service history, refueling logs, and reminders</description>
     <url/>
     <licenses>
         <license/>
