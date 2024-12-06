@@ -7,6 +7,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 //@EnableMethodSecurity
@@ -16,8 +21,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Використання нового способу активації CORS
+                .csrf(csrf -> csrf.disable()) // Вимкнення CSRF для спрощення
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/public/**", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
@@ -38,4 +45,17 @@ public class SecurityConfig {
 //    ) throws Exception {
 //        return authenticationConfiguration.getAuthenticationManager();
 //    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*")); // Дозволити запити з будь-якого джерела
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Дозволені методи
+        configuration.setAllowedHeaders(List.of("*")); // Дозволити будь-які заголовки
+        configuration.setAllowCredentials(false); // Заборонити передачу cookies
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Застосувати CORS до всіх шляхів
+        return source;
+    }
 }
