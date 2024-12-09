@@ -20,10 +20,8 @@ import java.util.List;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-//@EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
-
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -32,10 +30,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-//                .cors(AbstractHttpConfigurer::disable)
-//                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Використання нового способу активації CORS
-                .csrf(csrf -> csrf.disable()) // Вимкнення CSRF для спрощення
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/public/**", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
@@ -43,7 +39,7 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
-                .httpBasic(withDefaults()) // swagger with this line don`t works
+                // .httpBasic(withDefaults()) // swagger with this line don`t works
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 //                .userDetailsService(userDetailsService)
@@ -55,18 +51,5 @@ public class SecurityConfig {
             AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Дозволити запити з будь-якого джерела
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Дозволені методи
-        configuration.setAllowedHeaders(List.of("*")); // Дозволити будь-які заголовки
-        configuration.setAllowCredentials(false); // Заборонити передачу cookies
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Застосувати CORS до всіх шляхів
-        return source;
     }
 }
