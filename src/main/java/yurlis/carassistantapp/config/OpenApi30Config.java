@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-        //@OpenAPIDefinition(info = @Info(title = "API", version = "v1"))
 @OpenAPIDefinition(
         info = @Info(title = "API", version = "v1"),
-        servers = @Server(url = "https://car-assistant-app-production.up.railway.app/api", description = "Production API server")
+        servers = @Server(url = "https://car-assistant-app-production.up.railway.app/api",
+                description = "Production API server")
 )
 @SecurityScheme(
         name = "bearerAuth",
