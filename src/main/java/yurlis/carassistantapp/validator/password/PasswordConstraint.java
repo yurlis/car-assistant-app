@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordConstraint {
-    String message() default "must be between 8 and 35 characters long "
+    String message() default "Password must be between 8 and 35 characters "
             + "and include one number, one letter, and one special character";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

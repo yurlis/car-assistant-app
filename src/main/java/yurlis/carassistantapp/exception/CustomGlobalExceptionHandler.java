@@ -18,9 +18,27 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+//    @Override
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+//            MethodArgumentNotValidException ex,
+//            HttpHeaders headers,
+//            HttpStatusCode status,
+//            WebRequest request) {
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", LocalDateTime.now());
+//        body.put("status", HttpStatus.BAD_REQUEST);
+//
+//        List<String> errors = ex.getBindingResult().getAllErrors().stream()
+//                .map(e -> getErrorMessage(e))
+//                .toList();
+//        body.put("errors", errors);
+//        return new ResponseEntity<>(body, headers, status);
+//    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -31,10 +49,14 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.BAD_REQUEST);
-        List<String> errors = ex.getBindingResult().getAllErrors().stream()
-                .map(e -> getErrorMessage(e))
-                .toList();
-        body.put("errors", errors);
+
+        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        FieldError::getDefaultMessage
+                ));
+
+        body.put("errors", errors); // Додаємо до відповіді
         return new ResponseEntity<>(body, headers, status);
     }
 
@@ -58,6 +80,16 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 //        body.put("errors", errors);
 //        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
 //    }
+
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<Object> handleRegistrationException(RegistrationException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        String errorMessage = ex.getMessage();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST);
+        body.put("errors", errorMessage);
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 
     private String getErrorMessage(ObjectError e) {
         if (e instanceof FieldError) {

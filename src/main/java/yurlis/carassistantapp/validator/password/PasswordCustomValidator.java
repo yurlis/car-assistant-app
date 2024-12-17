@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class PasswordCustomValidator implements
         ConstraintValidator<PasswordConstraint, String> {
     public static final String PASSWORD_REGEXP =
-            "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]+$";
+            "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]+$.";
     public static final int MIN_PASSWORD_LENGTH = 8;
 
     public static final int MAX_PASSWORD_LENGTH = 35;

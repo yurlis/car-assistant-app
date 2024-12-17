@@ -22,7 +22,7 @@ public class UserRegistrationRequestDto {
     @NotBlank(message = "Repeat password cannot be empty")
     @Length(min = 8, max = 35, message = "Password must be between 8 and 35 characters")
     private String repeatPassword;
-//    @NotBlank(message = "First name cannot be empty")
+    @NotBlank(message = "First name cannot be empty")
     private String firstName;
 //    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
