@@ -5,8 +5,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.springframework.stereotype.Component;
 import yurlis.carassistantapp.config.MapperConfig;
-import yurlis.carassistantapp.dto.UserRegistrationRequestDto;
-import yurlis.carassistantapp.dto.UserRegistrationResponseDto;
+import yurlis.carassistantapp.dto.authentication.UserRegistrationRequestDto;
+import yurlis.carassistantapp.dto.authentication.UserRegistrationResponseDto;
 import yurlis.carassistantapp.model.User;
 
 @Mapper(config = MapperConfig.class, uses = PasswordEncoderHelper.class)

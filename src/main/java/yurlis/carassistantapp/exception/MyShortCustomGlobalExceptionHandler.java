@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,23 +13,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 //@ControllerAdvice
-public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class MyShortCustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final int FIRST_FIELD_INDEX = 1;
-    private static final int SECOND_FIELD_INDEX = 2;
-
-//
+//    ------ це видає все, крім помилок MatchFields
 //{
-//    "timestamp": "2024-12-17T14:47:09.8314183",
+//    "timestamp": "2024-12-17T14:48:59.6820911",
 //        "status": "BAD_REQUEST",
-//        "errors": [
-//    "Must be a valid email address",
-//            "Passwords must match"
-//    ]
+//        "errors": {
+//              "firstName": "First name cannot be empty",
+//              "repeatPassword": "Password must be between 8 and 35 characters",
+//              "email": "Must be a valid email address"
+//      }
 //}
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -40,11 +37,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST);
+        body.put("HTTP_status", createHttpStatus(HttpStatus.BAD_REQUEST));
 
-        List<String> errors = ex.getBindingResult().getAllErrors().stream()
-                .map(e -> getErrorMessage(e))
-                .toList();
+        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        FieldError::getDefaultMessage
+                ));
         body.put("errors", errors);
         return new ResponseEntity<>(body, headers, status);
     }
@@ -53,17 +52,18 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleRegistrationException(RegistrationException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         String errorMessage = ex.getMessage();
+
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.CONFLICT);
+        body.put("HTTP_status", createHttpStatus(HttpStatus.CONFLICT));
         body.put("errors", errorMessage);
+
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    private String getErrorMessage(ObjectError e) {
-        if (e instanceof FieldError) {
-            return e.getDefaultMessage();
-        }
-
-        return e.getDefaultMessage();
+    private Map<String, Object> createHttpStatus(HttpStatus status) {
+        Map<String, Object> httpStatus = new LinkedHashMap<>();
+        httpStatus.put("code", status.value());
+        httpStatus.put("message", status.toString());
+        return httpStatus;
     }
 }

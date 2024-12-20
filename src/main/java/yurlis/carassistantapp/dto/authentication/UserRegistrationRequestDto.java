@@ -1,4 +1,4 @@
-package yurlis.carassistantapp.dto;
+package yurlis.carassistantapp.dto.authentication;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +20,8 @@ public class UserRegistrationRequestDto {
     @PasswordConstraint
     private String password;
     @NotBlank(message = "Repeat password cannot be empty")
-    @Length(min = 8, max = 35, message = "Password must be between 8 and 35 characters")
+    @Length(min = 8, max = 35, message = "Password must be between 8 and 35 characters "
+            + "and include one number, one letter, and one special character")
     private String repeatPassword;
     @NotBlank(message = "First name cannot be empty")
     private String firstName;

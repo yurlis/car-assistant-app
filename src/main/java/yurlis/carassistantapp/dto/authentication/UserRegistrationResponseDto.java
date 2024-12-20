@@ -1,4 +1,4 @@
-package yurlis.carassistantapp.dto;
+package yurlis.carassistantapp.dto.authentication;
 
 import lombok.Data;
 

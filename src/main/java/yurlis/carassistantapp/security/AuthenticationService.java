@@ -5,8 +5,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import yurlis.carassistantapp.dto.UserLoginRequestDto;
-import yurlis.carassistantapp.dto.UserLoginResponseDto;
+import yurlis.carassistantapp.dto.authentication.UserLoginRequestDto;
+import yurlis.carassistantapp.dto.authentication.UserLoginResponseDto;
 
 @Service
 @RequiredArgsConstructor
