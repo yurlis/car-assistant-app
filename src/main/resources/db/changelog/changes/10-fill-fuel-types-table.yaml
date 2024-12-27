@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-fuel-types
+      author: yurlis
+      changes:
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Petrol' }
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Diesel' }
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Gas LPG' }
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Gas CNG' }
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Hybrid' }
+        - insert:
+            tableName: fuel_types
+            columns:
+              - column: { name: fuel_type, value: 'Electro' }

@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-cars-table
+      author: yurlis
+      changes:
+        - createTable:
+            tableName: cars
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cars_users
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    onDelete: CASCADE
+              - column:
+                  name: brand
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year_of_manufacture
+                  type: SMALLINT UNSIGNED
+                  constraints:
+                    nullable: true
+              - column:
+                  name: vin_code
+                  type: VARCHAR(17)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: purchase_date
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column:
+                  name: mileage
+                  type: INT UNSIGNED
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color_code
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

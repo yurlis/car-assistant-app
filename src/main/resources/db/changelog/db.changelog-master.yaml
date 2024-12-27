@@ -15,3 +15,13 @@ databaseChangeLog:
       file: /db/changelog/changes/07-fill-users-roles-table-for-admin.yaml
   - include:
       file: /db/changelog/changes/08-update-field-password-to-hash-mode-for-admin.yaml
+  - include:
+      file: /db/changelog/changes/09-create-fuel_types-table.yaml
+  - include:
+      file: /db/changelog/changes/10-fill-fuel-types-table.yaml
+  - include:
+      file: /db/changelog/changes/11-create-cars-table.yaml
+  - include:
+      file: /db/changelog/changes/12-create-car_photos-table.yaml
+  - include:
+      file: /db/changelog/changes/13-create-cars-fuel-types.yaml

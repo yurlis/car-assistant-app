@@ -21,6 +21,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -43,7 +44,7 @@ public class Car {
     private Integer yearOfManufacture;
     private String vinCode;
     private LocalDate purchaseDate;
-    private Integer mileage;
+    private Long mileage;
     private String colorCode;
 
     @ManyToMany
@@ -53,9 +54,13 @@ public class Car {
             inverseJoinColumns = @JoinColumn(name = "fuel_type_id")
     )
     @EqualsAndHashCode.Exclude
-    private Set<FuelType> fuelTypes;
+    private Set<FuelType> fuelTypes = new HashSet<>();
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<CarPhoto> carPhotos;
+    private Set<CarPhoto> carPhotos = new HashSet<>();
+
+    public Car(Long id) {
+        this.id = id;
+    }
 }

@@ -21,8 +21,10 @@ import yurlis.carassistantapp.service.UserService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@Tag(name = "Authentication management",
-        description = "Endpoints for managing online store authentication processes")
+@Tag(
+        name = "Authentication Management",
+        description = "Endpoints for handling the authentication processes of the online store."
+)
 public class AuthenticationController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
@@ -37,6 +39,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Authenticate a user",
+            description = "Performs authentication by validating user credentials and returning an access token."
+    )
+    @ResponseStatus(HttpStatus.OK)
     public UserLoginResponseDto login(@RequestBody UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
     }

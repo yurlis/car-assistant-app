@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-car-fuel-types
+      author: yurlis
+      changes:
+        - createTable:
+            tableName: cars_fuel_types
+            columns:
+              - column:
+                  name: car_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_car_fuel_types_car
+                    referencedTableName: cars
+                    referencedColumnNames: id
+                    nullable: false
+                    primaryKey: true
+                    onDelete: CASCADE
+              - column:
+                  name: fuel_type_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_car_fuel_types_fuel_type
+                    referencedTableName: fuel_types
+                    referencedColumnNames: id
+                    nullable: false
+                    primaryKey: true
