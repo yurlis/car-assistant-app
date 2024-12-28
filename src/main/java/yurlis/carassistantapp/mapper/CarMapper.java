@@ -13,6 +13,8 @@ import yurlis.carassistantapp.dto.carphoto.CarPhotoDto;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.model.FuelType;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,7 @@ public interface CarMapper {
 
     @Mapping(target = "carPhotos", ignore = true)
     @Mapping(target = "fuelTypes", ignore = true)
+    @Mapping(source = "purchaseDate", target = "purchaseDate")
     Car toModel(CreateCarWithoutPhotosDto requestDto);
 
     @AfterMapping
@@ -77,5 +80,13 @@ public interface CarMapper {
                     return fuelType;
                 })
                 .collect(Collectors.toSet());
+    }
+
+    default LocalDate mapPurchaseDate(String purchaseDate) {
+        if (purchaseDate == null || purchaseDate.isEmpty()) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return LocalDate.parse(purchaseDate, formatter);
     }
 }

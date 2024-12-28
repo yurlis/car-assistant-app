@@ -11,6 +11,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import yurlis.carassistantapp.validator.date.ValidDateFormat;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -32,9 +33,10 @@ public class CreateCarWithoutPhotosDto {
             message = "VIN must be 17 characters long and consist of uppercase letters and digits")
     private String vinCode;
 
-    @PastOrPresent(message = "Purchase date cannot be in the future")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate purchaseDate;
+    @ValidDateFormat(message = "Purchase date must be in format dd-MM-yyyy")
+  //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    // @PastOrPresent(message = "Purchase date cannot be in the future")
+    private String purchaseDate;
 
     @PositiveOrZero(message = "Mileage cannot be negative")
     private Long mileage;
