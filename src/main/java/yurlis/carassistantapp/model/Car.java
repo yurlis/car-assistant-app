@@ -26,7 +26,7 @@ import java.util.Set;
 
 @Entity
 @SQLRestriction("is_deleted = FALSE")
-@SQLDelete(sql = "UPDATE books SET is_deleted = TRUE WHERE id = ?")
+@SQLDelete(sql = "UPDATE cars SET is_deleted = TRUE WHERE id = ?")
 @Table(name = "cars")
 @NoArgsConstructor
 @Getter

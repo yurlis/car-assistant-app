@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,5 +55,17 @@ public class CarController {
     public List<CarWithoutPhotosDto> getAllCarsForCurrentUser(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return carService.findAllByUserId(user.getId());
+    }
+
+    @Operation(
+            summary = "Delete a car (USER)",
+            description = "Allows the currently authenticated user to delete a specific car by its unique ID. " +
+                    "The car must belong to the user. Returns no content upon successful deletion."
+    )
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCar(@PathVariable Long id) {
+        carService.deleteById(id);
     }
 }
