@@ -17,7 +17,7 @@ public class CarWithoutPhotosDto {
     private String model;
     private Integer yearOfManufacture;
     private String vinCode;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;
     private Long mileage;
     private String colorCode;

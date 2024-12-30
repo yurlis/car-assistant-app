@@ -33,10 +33,10 @@ public class CreateCarWithoutPhotosDto {
             message = "VIN must be 17 characters long and consist of uppercase letters and digits")
     private String vinCode;
 
-    @ValidDateFormat(message = "Purchase date must be in format dd-MM-yyyy")
+    // @ValidDateFormat(message = "Purchase date must be in format dd-MM-yyyy")
   //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    // @PastOrPresent(message = "Purchase date cannot be in the future")
-    private String purchaseDate;
+    @PastOrPresent(message = "Purchase date cannot be in the future")
+    private LocalDate purchaseDate;
 
     @PositiveOrZero(message = "Mileage cannot be negative")
     private Long mileage;

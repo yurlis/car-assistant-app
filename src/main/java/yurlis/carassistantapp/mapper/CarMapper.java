@@ -61,7 +61,7 @@ public interface CarMapper {
 
     @Mapping(target = "carPhotos", ignore = true)
     @Mapping(target = "fuelTypes", ignore = true)
-    @Mapping(source = "purchaseDate", target = "purchaseDate")
+    //@Mapping(source = "purchaseDate", target = "purchaseDate")
     Car toModel(CreateCarWithoutPhotosDto requestDto);
 
     @AfterMapping
