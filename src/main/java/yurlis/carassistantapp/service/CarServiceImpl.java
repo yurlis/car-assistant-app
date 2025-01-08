@@ -3,9 +3,10 @@ package yurlis.carassistantapp.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yurlis.carassistantapp.dto.car.CarWithoutPhotosDto;
-import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosDto;
-import yurlis.carassistantapp.dto.car.UpdateCarRequestDto;
+import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosRequestDto;
+import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.mapper.CarMapper;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.repository.car.CarRepository;
@@ -23,7 +24,7 @@ public class CarServiceImpl implements CarService {
     private final CarMapper carMapper;
 
     @Override
-    public CarWithoutPhotosDto save(Long userId, CreateCarWithoutPhotosDto requestDto) {
+    public CarWithoutPhotosDto save(Long userId, CreateCarWithoutPhotosRequestDto requestDto) {
         Car car = carMapper.toModel(requestDto);
         car.setUser(userRepository.getReferenceById(userId));
         return carMapper.toDto(carRepository.save(car));
@@ -46,9 +47,17 @@ public class CarServiceImpl implements CarService {
         return carMapper.toDto(car);
     }
 
+    @Transactional
     @Override
-    public CarWithoutPhotosDto update(Long id, UpdateCarRequestDto updateCarRequestDto) {
-        return null;
+    public CarWithoutPhotosDto update(Long id, UpdateCarWithoutPhotosRequestDto updateRequestDto) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Car with ID " + id + " not found"));
+
+        carMapper.updateCarFromDto(car, updateRequestDto);
+
+        Car updatedCar = carRepository.save(car);
+
+        return carMapper.toDto(updatedCar);
     }
 
     @Override

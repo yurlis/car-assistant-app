@@ -1,6 +1,5 @@
 package yurlis.carassistantapp.dto.car;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,14 +10,14 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import yurlis.carassistantapp.validator.date.ValidDateFormat;
+import yurlis.carassistantapp.validator.yearofmanufacture.ValidYearOfManufacture;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @Accessors(chain = true)
-public class CreateCarWithoutPhotosDto {
+public class CreateCarWithoutPhotosRequestDto {
     @NotBlank(message = "Brand cannot be empty")
     private String brand;
 
@@ -27,6 +26,7 @@ public class CreateCarWithoutPhotosDto {
 
     @NotNull(message = "Year of manufacture cannot be null")
     @Positive(message = "Year of manufacture must be positive")
+    @ValidYearOfManufacture(message = "Year of manufacture cannot be in the future")
     private Integer yearOfManufacture;
 
     @Pattern(regexp = "^[A-HJ-NPR-Z0-9]{17}$",
@@ -34,7 +34,7 @@ public class CreateCarWithoutPhotosDto {
     private String vinCode;
 
     // @ValidDateFormat(message = "Purchase date must be in format dd-MM-yyyy")
-  //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @PastOrPresent(message = "Purchase date cannot be in the future")
     private LocalDate purchaseDate;
 
