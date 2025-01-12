@@ -36,7 +36,7 @@ public class CreateCarWithoutPhotosRequestDto {
     private String vinCode;
 
     @Schema(description = "The purchase date, either in ISO 8601 format (e.g., \"2025-01-05T06:11:40.000+00:00\") " +
-            "or as milliseconds since 1970-01-01.")
+            "or as milliseconds since January 1, 1970, 00:00:00 GMT")
     @PastOrPresent(message = "Purchase date cannot be in the future")
     //@JsonFormat(pattern = "yyyy-MM-dd")
     private Timestamp purchaseDate;

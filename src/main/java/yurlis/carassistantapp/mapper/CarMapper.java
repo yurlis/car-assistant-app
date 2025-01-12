@@ -12,6 +12,7 @@ import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.model.FuelType;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
@@ -20,13 +21,12 @@ import java.util.stream.Collectors;
 @Mapper(config = MapperConfig.class)
 @Component
 public interface CarMapper {
-    @Mapping(target = "fuelTypesIds", ignore = true)
+    @Mapping(target = "fuelTypesIds", ignore = true) // Автоматично встановлюється в @AfterMapping
     @Mapping(source = "user.id", target = "userId")
     CarWithoutPhotosDto toDto(Car car);
 
-    @Mapping(target = "carPhotos", ignore = true)
+    //@Mapping(target = "carPhotos", ignore = true)
     @Mapping(target = "fuelTypes", ignore = true)
-    //@Mapping(source = "purchaseDate", target = "purchaseDate")
     Car toModel(CreateCarWithoutPhotosRequestDto requestDto);
 
     @AfterMapping
@@ -80,24 +80,7 @@ public interface CarMapper {
                 .collect(Collectors.toSet());
     }
 
-//    @AfterMapping
-//    default void setCarPhotos(@MappingTarget CarWithoutPhotosDto carWithoutPhotosDto, Car car) {
-//        Set<CarPhotoDto> carPhotos = car.getCarPhotos().stream()
-//                .map(carPhoto -> {
-//                    CarPhotoDto carPhotoDto = new CarPhotoDto();
-//                    carPhotoDto.setId(carPhoto.getId());
-//                    carPhotoDto.setPhotoUrl(carPhoto.getPhotoUrl());
-//                    return carPhotoDto;
-//                })
-//                .collect(Collectors.toSet());
-//        carWithoutPhotosDto.setCarPhotos(carPhotos);
-//    }
-
-//    default LocalDate mapPurchaseDate(String purchaseDate) {
-//        if (purchaseDate == null || purchaseDate.isEmpty()) {
-//            return null;
-//        }
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//        return LocalDate.parse(purchaseDate, formatter);
-//    }
+    default Long mapTimestampToLong(Timestamp timestamp) {
+        return timestamp != null ? timestamp.getTime() : null;
+    }
 }

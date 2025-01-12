@@ -15,7 +15,7 @@ public class CarWithoutPhotosDto {
     private String model;
     private Integer yearOfManufacture;
     private String vinCode;
-    private Timestamp purchaseDate;
+    private Long purchaseDate;
     private Long mileage;
     private String colorCode;
     private Set<Long> fuelTypesIds;
