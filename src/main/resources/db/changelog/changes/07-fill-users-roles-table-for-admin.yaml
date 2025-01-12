@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: fill-users-roles-table-for-admin
-      author: zorrolis
+      author: Lisovskyi_Yurii
       changes:
         - insert:
             tableName: users_roles

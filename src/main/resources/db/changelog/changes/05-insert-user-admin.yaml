@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
       id: insert-users
-      author: zorrolis
+      author: Lisovskyi_Yurii
       changes:
         - insert:
-            tablename: users
+            tableName: users
             columns:
               - column: {name: email, value: "yuri.lisovski@gmail.com"}
               - column: {name: password, value: "Securitypas1!"}

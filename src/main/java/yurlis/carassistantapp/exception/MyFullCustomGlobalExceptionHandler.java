@@ -1,9 +1,12 @@
 package yurlis.carassistantapp.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -114,6 +117,17 @@ public class MyFullCustomGlobalExceptionHandler extends ResponseEntityExceptionH
         body.put("errors", errorMessage);
 
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateVinCodeException.class)
+    public ResponseEntity<Object> handleDuplicateVinCodeException(DuplicateVinCodeException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+
+        body.put("timestamp", LocalDateTime.now());
+        body.put("HTTP_status", createHttpStatus(HttpStatus.BAD_REQUEST));
+        body.put("errors", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     private Map<String, Object> createHttpStatus(HttpStatus status) {

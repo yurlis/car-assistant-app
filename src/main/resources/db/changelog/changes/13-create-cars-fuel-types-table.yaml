@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: create-table-car-fuel-types
-      author: yurlis
+      id: create-car-fuel-types-table
+      author: Lisovskyi_Yurii
       changes:
         - createTable:
             tableName: cars_fuel_types

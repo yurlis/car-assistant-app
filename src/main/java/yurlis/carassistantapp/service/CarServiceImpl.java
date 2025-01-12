@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yurlis.carassistantapp.dto.car.CarWithoutPhotosDto;
 import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
+import yurlis.carassistantapp.exception.DuplicateVinCodeException;
 import yurlis.carassistantapp.mapper.CarMapper;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.repository.car.CarRepository;
@@ -27,6 +28,10 @@ public class CarServiceImpl implements CarService {
     public CarWithoutPhotosDto save(Long userId, CreateCarWithoutPhotosRequestDto requestDto) {
         Car car = carMapper.toModel(requestDto);
         car.setUser(userRepository.getReferenceById(userId));
+        if (carRepository.existsByVinCode(car.getVinCode())) {
+            throw new DuplicateVinCodeException("Car with this VIN code already exists.");
+        }
+
         return carMapper.toDto(carRepository.save(car));
     }
 

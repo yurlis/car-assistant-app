@@ -1,5 +1,7 @@
 package yurlis.carassistantapp.dto.car;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +14,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import yurlis.carassistantapp.validator.yearofmanufacture.ValidYearOfManufacture;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
@@ -33,10 +35,11 @@ public class CreateCarWithoutPhotosRequestDto {
             message = "VIN must be 17 characters long and consist of uppercase letters and digits")
     private String vinCode;
 
-    // @ValidDateFormat(message = "Purchase date must be in format dd-MM-yyyy")
-    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @Schema(description = "Дата покупки у форматі yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent(message = "Purchase date cannot be in the future")
-    private LocalDate purchaseDate;
+    //private LocalDate purchaseDate;
+    private Timestamp purchaseDate;
 
     @PositiveOrZero(message = "Mileage cannot be negative")
     private Long mileage;

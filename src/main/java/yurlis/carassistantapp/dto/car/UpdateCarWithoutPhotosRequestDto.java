@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import yurlis.carassistantapp.validator.yearofmanufacture.ValidYearOfManufacture;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
@@ -26,7 +26,7 @@ public class UpdateCarWithoutPhotosRequestDto {
     private String vinCode;
 
     @PastOrPresent(message = "Purchase date cannot be in the future")
-    private LocalDate purchaseDate;
+    private Timestamp purchaseDate;
 
     @PositiveOrZero(message = "Mileage cannot be negative")
     private Long mileage;

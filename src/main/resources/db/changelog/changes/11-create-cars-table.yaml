@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-cars-table
-      author: yurlis
+      author: Lisovskyi_Yurii
       changes:
         - createTable:
             tableName: cars
@@ -18,7 +18,7 @@ databaseChangeLog:
                   type: BIGINT
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_cars_users
+                    foreignKeyName: fk_cars_user
                     referencedTableName: users
                     referencedColumnNames: id
                     onDelete: CASCADE

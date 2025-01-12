@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-table-car-photos
-      author: yurlis
+      author: Lisovskyi_Yurii
       changes:
         - createTable:
             tableName: car_photos

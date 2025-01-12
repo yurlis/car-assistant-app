@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,15 +36,25 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(nullable = false)
     private String brand;
+
+    @Column(nullable = false)
     private String model;
+
     private Integer yearOfManufacture;
+
     private String vinCode;
-    private LocalDate purchaseDate;
+
+    private Timestamp purchaseDate;
+
     private Long mileage;
+
     private String colorCode;
 
     @ManyToMany
@@ -59,6 +69,9 @@ public class Car {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<CarPhoto> carPhotos = new HashSet<>();
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     public Car(Long id) {
         this.id = id;

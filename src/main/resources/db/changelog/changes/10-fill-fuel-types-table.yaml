@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: insert-fuel-types
-      author: yurlis
+      author: Lisovskyi_Yurii
       changes:
         - insert:
             tableName: fuel_types

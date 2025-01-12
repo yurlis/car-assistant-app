@@ -1,11 +1,9 @@
 package yurlis.carassistantapp.dto.car;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import yurlis.carassistantapp.dto.carphoto.CarPhotoDto;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
@@ -17,8 +15,7 @@ public class CarWithoutPhotosDto {
     private String model;
     private Integer yearOfManufacture;
     private String vinCode;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate purchaseDate;
+    private Timestamp purchaseDate;
     private Long mileage;
     private String colorCode;
     private Set<Long> fuelTypesIds;

@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-purchase-date-type
+      author: Lisovskyi_Yurii
+      changes:
+        - addColumn:
+            tableName: cars
+            columns:
+              - column:
+                  name: purchase_date_new
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+        - update:
+            tableName: cars
+            columns:
+              - column:
+                  name: purchase_date_new
+                  value: purchase_date
+        - dropColumn:
+            tableName: cars
+            columnName: purchase_date
+        - renameColumn:
+            tableName: cars
+            oldColumnName: purchase_date_new
+            newColumnName: purchase_date
+            columnDataType: TIMESTAMP
