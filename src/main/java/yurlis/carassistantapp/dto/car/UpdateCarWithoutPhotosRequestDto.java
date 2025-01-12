@@ -1,4 +1,5 @@
 package yurlis.carassistantapp.dto.car;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -25,6 +26,8 @@ public class UpdateCarWithoutPhotosRequestDto {
     )
     private String vinCode;
 
+    @Schema(description = "The purchase date, either in ISO 8601 format (e.g., \"2025-01-05T06:11:40.000+00:00\") " +
+            "or as milliseconds since 1970-01-01.")
     @PastOrPresent(message = "Purchase date cannot be in the future")
     private Timestamp purchaseDate;
 
