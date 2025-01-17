@@ -3,6 +3,7 @@ package yurlis.carassistantapp.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,9 +26,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "cars")
 @SQLRestriction("is_deleted = FALSE")
 @SQLDelete(sql = "UPDATE cars SET is_deleted = TRUE WHERE id = ?")
-@Table(name = "cars")
 @NoArgsConstructor
 @Getter
 @Setter

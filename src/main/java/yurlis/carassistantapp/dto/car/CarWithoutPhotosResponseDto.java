@@ -3,12 +3,11 @@ package yurlis.carassistantapp.dto.car;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
 @Accessors(chain = true)
-public class CarWithoutPhotosDto {
+public class CarWithoutPhotosResponseDto {
     private Long id;
     private Long userId;
     private String brand;

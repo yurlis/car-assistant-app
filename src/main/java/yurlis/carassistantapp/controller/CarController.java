@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,15 +20,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import yurlis.carassistantapp.dto.car.CarWithoutPhotosDto;
+import org.springframework.web.multipart.MultipartFile;
+import yurlis.carassistantapp.dto.car.CarPhotoResponseDto;
+import yurlis.carassistantapp.dto.car.CarWithoutPhotosResponseDto;
 import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
+import yurlis.carassistantapp.model.Car;
+import yurlis.carassistantapp.model.CarPhoto;
 import yurlis.carassistantapp.model.User;
+import yurlis.carassistantapp.service.CarPhotoService;
 import yurlis.carassistantapp.service.CarService;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +47,7 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class CarController {
     private final CarService carService;
+    private final CarPhotoService carPhotoService;
 
     @Operation(
             summary = "Create a new car for the current user (USER)",
@@ -58,8 +67,8 @@ public class CarController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CarWithoutPhotosDto createCar(Authentication authentication,
-                                         @RequestBody @Valid CreateCarWithoutPhotosRequestDto requestDto) {
+    public CarWithoutPhotosResponseDto createCar(Authentication authentication,
+                                                 @RequestBody @Valid CreateCarWithoutPhotosRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         return carService.save(user.getId(), requestDto);
     }
@@ -70,7 +79,7 @@ public class CarController {
     )
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<CarWithoutPhotosDto> getAllCarsForCurrentUser(Authentication authentication) {
+    public List<CarWithoutPhotosResponseDto> getAllCarsForCurrentUser(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return carService.findAllByUserId(user.getId());
     }
@@ -108,7 +117,7 @@ public class CarController {
         }
 
         If the car does not exist or does not belong to the user, an error will be returned.
-    """
+        """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -116,7 +125,7 @@ public class CarController {
                     description = "Car successfully updated",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = CarWithoutPhotosDto.class)
+                            schema = @Schema(implementation = CarWithoutPhotosResponseDto.class)
                     )
             ),
             @ApiResponse(
@@ -130,9 +139,125 @@ public class CarController {
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public CarWithoutPhotosDto updateCar(
+    public ResponseEntity<CarWithoutPhotosResponseDto> updateCar(
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid UpdateCarWithoutPhotosRequestDto updateRequestDto) {
-        return carService.update(id, updateRequestDto);
+        CarWithoutPhotosResponseDto updatedCar = carService.update(id, updateRequestDto);
+        return ResponseEntity.ok(updatedCar);
+    }
+
+    @Operation(
+            summary = "Upload a car photo (USER)",
+            description = """
+        Allows the currently authenticated user to upload a photo (JPG) for a specific car by its unique ID.
+        The file must be a valid JPG image, and the car must belong to the user.
+
+        Example:
+        - Path variable `id`: 123
+        - File: photo.jpg
+
+        If the car does not exist or does not belong to the user, an error will be returned.
+        """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Photo successfully uploaded",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CarPhotoResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Car not found or does not belong to the user"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input, validation error, or unsupported file format"
+            )
+    })
+    @PostMapping("/{id}/photo")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<CarPhotoResponseDto> uploadCarPhoto(
+            @PathVariable(name = "id") Long carId,
+            @RequestParam("photo") MultipartFile photo) {
+        if (!photo.getContentType().equals("image/jpeg")) {
+            throw new IllegalArgumentException("Only JPG files are allowed.");
+        }
+
+        CarPhotoResponseDto responseDto = carService.uploadPhoto(carId, photo);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @Operation(
+            summary = "Delete a car photo (USER)",
+            description = """
+            Deletes a photo by its unique ID. This operation removes the photo from both the storage (e.g., Cloudinary) and the database.
+            
+            Example:
+            - Path variable `photoId`: 456
+            
+            The user must have the necessary permissions to delete the photo. If the photo ID is invalid, an error will be returned.
+            """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Photo successfully deleted"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Photo not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied",
+                    content = @Content
+            )
+    })
+    @DeleteMapping("/{photoId}/photo")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId) {
+        carService.deletePhotoById(photoId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Get all photos of a car (USER)",
+            description = """
+            Retrieves all photos associated with a car by its unique ID. This operation fetches a list of all car photos, including URLs and other related information.
+            
+            Example:
+            - Path variable `carId`: 123
+            
+            The user must be authenticated and authorized to access the photos of this car. If the car does not exist or is not owned by the authenticated user, an error will be returned.
+            """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved list of car photos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CarPhotoResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Car not found or does not belong to the user"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied",
+                    content = @Content
+            )
+    })
+    @GetMapping("/{carId}/photos")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<CarPhotoResponseDto>> getAllCarPhotos(@PathVariable Long carId) {
+        List<CarPhotoResponseDto> carPhotos = carPhotoService.getAllPhotosForCar(carId);
+        return ResponseEntity.ok(carPhotos);
     }
 }

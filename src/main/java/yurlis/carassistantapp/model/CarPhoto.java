@@ -2,6 +2,7 @@ package yurlis.carassistantapp.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,10 +15,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import yurlis.carassistantapp.listener.CarPhotoListener;
 
 @Entity
 @Table(name = "car_photos")
-@SQLRestriction("is_deleted = FALSE")
+//@EntityListeners(CarPhotoListener.class)
+//@SQLRestriction("is_deleted = FALSE")
 @SQLDelete(sql = "UPDATE car_photos SET is_deleted = TRUE WHERE id = ?")
 @NoArgsConstructor
 @Getter

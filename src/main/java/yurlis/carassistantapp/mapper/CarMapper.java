@@ -6,15 +6,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
 import yurlis.carassistantapp.config.MapperConfig;
-import yurlis.carassistantapp.dto.car.CarWithoutPhotosDto;
+import yurlis.carassistantapp.dto.car.CarWithoutPhotosResponseDto;
 import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.model.FuelType;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,18 +21,18 @@ import java.util.stream.Collectors;
 public interface CarMapper {
     @Mapping(target = "fuelTypesIds", ignore = true) // Автоматично встановлюється в @AfterMapping
     @Mapping(source = "user.id", target = "userId")
-    CarWithoutPhotosDto toDto(Car car);
+    CarWithoutPhotosResponseDto toDto(Car car);
 
     //@Mapping(target = "carPhotos", ignore = true)
     @Mapping(target = "fuelTypes", ignore = true)
     Car toModel(CreateCarWithoutPhotosRequestDto requestDto);
 
     @AfterMapping
-    default void setFuelTypeIds(@MappingTarget CarWithoutPhotosDto carWithoutPhotosDto, Car car) {
+    default void setFuelTypeIds(@MappingTarget CarWithoutPhotosResponseDto carWithoutPhotosResponseDto, Car car) {
         Set<Long> fuelTypeIds = car.getFuelTypes().stream()
                 .map(FuelType::getId)
                 .collect(Collectors.toSet());
-        carWithoutPhotosDto.setFuelTypesIds(fuelTypeIds);
+        carWithoutPhotosResponseDto.setFuelTypesIds(fuelTypeIds);
     }
 
     @AfterMapping
