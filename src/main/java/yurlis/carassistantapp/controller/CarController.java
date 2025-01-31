@@ -1,6 +1,7 @@
 package yurlis.carassistantapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,6 +10,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,14 +32,16 @@ import yurlis.carassistantapp.dto.car.CarPhotoResponseDto;
 import yurlis.carassistantapp.dto.car.CarWithoutPhotosResponseDto;
 import yurlis.carassistantapp.dto.car.CreateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
-import yurlis.carassistantapp.model.Car;
-import yurlis.carassistantapp.model.CarPhoto;
+import yurlis.carassistantapp.dto.carrefuel.CarRefuelResponseDto;
+import yurlis.carassistantapp.dto.pagination.CustomPage;
 import yurlis.carassistantapp.model.User;
-import yurlis.carassistantapp.service.CarPhotoService;
-import yurlis.carassistantapp.service.CarService;
+import yurlis.carassistantapp.service.car.CarPhotoService;
+import yurlis.carassistantapp.service.car.CarService;
+import yurlis.carassistantapp.service.carrefuel.CarRefuelService;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,22 +54,41 @@ import java.util.Set;
 public class CarController {
     private final CarService carService;
     private final CarPhotoService carPhotoService;
+    private final CarRefuelService carRefuelService;
 
     @Operation(
-            summary = "Create a new car for the current user (USER)",
+            summary = "Create a new car (USER)",
             description = """
-                Adds a new car for the currently authenticated user to the CarAssistant system.
-                The user must be authenticated and authorized as 'ROLE_USER'.
-                
-                Example request body:
-                {
-                    "brand": "Toyota",
-                    "model": "Corolla",
-                    "yearOfManufacture": 2022,
-                    "price": 20000.00
-                }
-            """
+        Allows the authenticated user to create a new car. 
+        The user must have the 'ROLE_USER' role.
+
+        Example request body:
+        {
+            "brand": "Toyota",
+            "model": "Corolla",
+            "yearOfManufacture": 2022,
+            "price": 20000.00
+        }
+    """
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Car successfully created",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CarWithoutPhotosResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input or validation error"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
+            )
+    })
     @PostMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -74,9 +99,26 @@ public class CarController {
     }
 
     @Operation(
-            summary = "Get all cars for the current user without photos (USER)",
-            description = "Retrieve a list of all cars associated with the currently authenticated user, excluding photos."
+            summary = "Get all cars for the current user (USER)",
+            description = """
+        Retrieves a list of all cars owned by the authenticated user.
+        The list excludes photos of the cars.
+    """
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved the list of cars",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CarWithoutPhotosResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
+            )
+    })
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<CarWithoutPhotosResponseDto> getAllCarsForCurrentUser(Authentication authentication) {
@@ -87,37 +129,50 @@ public class CarController {
     @Operation(
             summary = "Delete a car (USER)",
             description = """
-                Allows the currently authenticated user to delete a specific car by its unique ID.
-                The car must belong to the user.
-                Returns no content (204) upon successful deletion.
-                
-                If the car does not exist or does not belong to the authenticated user, an error will be returned.
-            """
+        Deletes a car owned by the authenticated user, identified by its ID.
+        The car must belong to the user.
+
+        Example:
+        - Path variable `id`: 123
+
+        If the car does not exist or is not owned by the user, an error will be returned.
+    """
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Car successfully deleted"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Car not found or does not belong to the user"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
+            )
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCar(@PathVariable Long id) {
-        carService.deleteById(id);
+    public void deleteCar(@PathVariable Long id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        carService.deleteById(id, user.getId());
     }
 
     @Operation(
             summary = "Update a car (USER)",
             description = """
-        Allows the currently authenticated user to update the details of a specific car by its unique ID.
-        Accepts an UpdateCarWithoutPhotosRequestDto object and returns an updated CarWithoutPhotosDto object.
-        Only the fields provided in the request will be updated; others will retain their current values.
+        Updates the details of a car owned by the authenticated user.
         The car must belong to the user.
 
-        Example of partial update:
+        Example:
         {
             "brand": "Toyota",
             "model": "Corolla",
             "yearOfManufacture": 2015
         }
-
-        If the car does not exist or does not belong to the user, an error will be returned.
-        """
+    """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -135,6 +190,10 @@ public class CarController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input or validation error"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
             )
     })
     @PutMapping("/{id}")
@@ -149,15 +208,13 @@ public class CarController {
     @Operation(
             summary = "Upload a car photo (USER)",
             description = """
-        Allows the currently authenticated user to upload a photo (JPG) for a specific car by its unique ID.
-        The file must be a valid JPG image, and the car must belong to the user.
+        Uploads a photo for a car owned by the authenticated user.
+        The photo must be in JPG format, and the car must belong to the user.
 
         Example:
         - Path variable `id`: 123
         - File: photo.jpg
-
-        If the car does not exist or does not belong to the user, an error will be returned.
-        """
+    """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -174,7 +231,11 @@ public class CarController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid input, validation error, or unsupported file format"
+                    description = "Invalid input or unsupported file format"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
             )
     })
     @PostMapping("/{id}/photo")
@@ -193,13 +254,12 @@ public class CarController {
     @Operation(
             summary = "Delete a car photo (USER)",
             description = """
-            Deletes a photo by its unique ID. This operation removes the photo from both the storage (e.g., Cloudinary) and the database.
-            
-            Example:
-            - Path variable `photoId`: 456
-            
-            The user must have the necessary permissions to delete the photo. If the photo ID is invalid, an error will be returned.
-            """
+        Deletes a photo for a car owned by the authenticated user.
+        The photo must belong to the user's car.
+
+        Example:
+        - Path variable `photoId`: 456
+    """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -208,16 +268,15 @@ public class CarController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Photo not found",
-                    content = @Content
+                    description = "Photo not found or does not belong to the user's car"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Access denied",
-                    content = @Content
+                    description = "Access denied"
             )
     })
     @DeleteMapping("/{photoId}/photo")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId) {
         carService.deletePhotoById(photoId);
@@ -227,13 +286,11 @@ public class CarController {
     @Operation(
             summary = "Get all photos of a car (USER)",
             description = """
-            Retrieves all photos associated with a car by its unique ID. This operation fetches a list of all car photos, including URLs and other related information.
-            
-            Example:
-            - Path variable `carId`: 123
-            
-            The user must be authenticated and authorized to access the photos of this car. If the car does not exist or is not owned by the authenticated user, an error will be returned.
-            """
+        Retrieves all photos associated with a car owned by the authenticated user.
+
+        Example:
+        - Path variable `carId`: 123
+    """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -250,14 +307,67 @@ public class CarController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Access denied",
-                    content = @Content
+                    description = "Access denied"
             )
     })
     @GetMapping("/{carId}/photos")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<List<CarPhotoResponseDto>> getAllCarPhotos(@PathVariable Long carId) {
-        List<CarPhotoResponseDto> carPhotos = carPhotoService.getAllPhotosForCar(carId);
+    public ResponseEntity<List<CarPhotoResponseDto>> getAllCarPhotos(@PathVariable Long carId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        List<CarPhotoResponseDto> carPhotos = carPhotoService.getAllPhotosForCar(carId, user.getId());
         return ResponseEntity.ok(carPhotos);
+    }
+
+    @Operation(
+            summary = "Get all refuels for a specific car",
+            description = """
+                    Retrieves a paginated list of refuel records for the specified car.
+                    Supports optional filtering by date range and fuel type.
+                
+                    Example request:
+                    GET /cars/{carId}/refuels?page=0&size=10&sort=date,desc&startDate=2024-01-01&endDate=2024-12-31&fuelType=DIESEL
+                """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "List of refuel records successfully retrieved",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CarRefuelResponseDto.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request parameters"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Car not found"
+            )
+    })
+    @GetMapping("/{carId}/refuels")
+    @ResponseStatus(HttpStatus.OK)
+    public CustomPage<CarRefuelResponseDto> getRefuelsForCar(
+            @PathVariable Long carId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) Long fuelType,
+            @ParameterObject Pageable pageable
+    ) {
+        if (startDate == null) {
+            startDate = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+        }
+        if (endDate == null) {
+            endDate = LocalDateTime.now();
+        }
+
+        return carRefuelService.getRefuelsForCar(carId, Timestamp.valueOf(startDate), Timestamp.valueOf(endDate), fuelType, pageable);
     }
 }

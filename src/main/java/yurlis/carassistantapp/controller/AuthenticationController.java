@@ -16,7 +16,7 @@ import yurlis.carassistantapp.dto.authentication.UserRegistrationRequestDto;
 import yurlis.carassistantapp.dto.authentication.UserRegistrationResponseDto;
 import yurlis.carassistantapp.exception.RegistrationException;
 import yurlis.carassistantapp.security.AuthenticationService;
-import yurlis.carassistantapp.service.UserService;
+import yurlis.carassistantapp.service.user.UserService;
 
 @RestController
 @RequiredArgsConstructor

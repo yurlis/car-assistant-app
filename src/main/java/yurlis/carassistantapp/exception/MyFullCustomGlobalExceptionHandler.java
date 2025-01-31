@@ -1,6 +1,7 @@
 package yurlis.carassistantapp.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,17 +29,17 @@ public class MyFullCustomGlobalExceptionHandler extends ResponseEntityExceptionH
     private static final int FIRST_FIELD_INDEX = 1;
     private static final int SECOND_FIELD_INDEX = 2;
 
-    // повна реалізація в форматі
-    //    {
-    //        "timestamp":"2024-12-17T14:52:13.6498567",
-    //        "status":"BAD_REQUEST",
-    //        "errors":{
-    //            "firstName":"First name cannot be empty",
-    //            "repeatPassword":"Passwords must match",
-    //            "email":"Must be a valid email address",
-    //            "password":"Passwords must match"
-    //        }
-    //    }
+//     повна реалізація в форматі
+//        {
+//            "timestamp":"2024-12-17T14:52:13.6498567",
+//            "status":"BAD_REQUEST",
+//            "errors":{
+//                "firstName":"First name cannot be empty",
+//                "repeatPassword":"Passwords must match",
+//                "email":"Must be a valid email address",
+//                "password":"Passwords must match"
+//            }
+//        }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -128,6 +129,16 @@ public class MyFullCustomGlobalExceptionHandler extends ResponseEntityExceptionH
         body.put("errors", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     private Map<String, Object> createHttpStatus(HttpStatus status) {

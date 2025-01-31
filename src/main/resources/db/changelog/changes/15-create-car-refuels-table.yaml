@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-car-refuels-table
+      author: Lisovskyi_Yurii
+      changes:
+        - createTable:
+            tableName: car_refuels
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: refuel_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gas_station_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: car_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_car_refuels_car
+                    referencedTableName: cars
+                    referencedColumnNames: id
+                    onDelete: CASCADE
+              - column:
+                  name: fuel_quantity
+                  type: DECIMAL(5, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost_per_liter
+                  type: DECIMAL(5, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movement_type
+                  type: ENUM('CITY', 'HIGHWAY', 'MIXED')
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fuel_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_car_refuels_fuel_type
+                    referencedTableName: fuel_types
+                    referencedColumnNames: id
+                    onDelete: CASCADE
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

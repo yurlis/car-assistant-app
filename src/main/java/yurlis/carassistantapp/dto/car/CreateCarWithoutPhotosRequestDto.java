@@ -1,6 +1,5 @@
 package yurlis.carassistantapp.dto.car;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -38,7 +37,7 @@ public class CreateCarWithoutPhotosRequestDto {
     @Schema(description = "The purchase date, either in ISO 8601 format (e.g., \"2025-01-05T06:11:40.000+00:00\") " +
             "or as milliseconds since January 1, 1970, 00:00:00 GMT")
     @PastOrPresent(message = "Purchase date cannot be in the future")
-    //@JsonFormat(pattern = "yyyy-MM-dd")
+    //@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") контроль формату
     private Timestamp purchaseDate;
 
     @PositiveOrZero(message = "Mileage cannot be negative")

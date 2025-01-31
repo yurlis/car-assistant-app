@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import yurlis.carassistantapp.dto.fueltypes.FuelTypeDto;
-import yurlis.carassistantapp.service.FuelTypeService;
+import yurlis.carassistantapp.dto.fueltypes.FuelTypeResponseDto;
+import yurlis.carassistantapp.service.fueltype.FuelTypeService;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class FuelTypeController {
                     @ApiResponse(responseCode = "403", description = "Forbidden, user does not have the required role")
             }
     )
-    public List<FuelTypeDto> getAllFuelTypes() {
+    public List<FuelTypeResponseDto> getAllFuelTypes() {
         return fuelTypeService.getAllFuelTypes();
     }
 }

@@ -1,10 +1,9 @@
-package yurlis.carassistantapp.service;
+package yurlis.carassistantapp.service.car;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +22,6 @@ import yurlis.carassistantapp.repository.user.UserRepository;
 import yurlis.carassistantapp.service.photoservice.PhotoStorageService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -80,10 +78,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        carRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Car with ID " + id + " not found."));
-
+    public void deleteById(Long id, Long userId) {
+        carRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Car with ID %d not found for user with ID %d.", id, userId)
+                ));
 
         List<CarPhoto> carPhotos = carPhotoRepository.findByCarIdAndIsDeletedFalse(id);
         deleteCarTransactional(id);

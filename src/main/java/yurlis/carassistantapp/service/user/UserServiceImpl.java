@@ -1,4 +1,4 @@
-package yurlis.carassistantapp.service;
+package yurlis.carassistantapp.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

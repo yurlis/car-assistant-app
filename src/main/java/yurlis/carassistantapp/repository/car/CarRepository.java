@@ -13,5 +13,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     // @Query("SELECT c FROM Car c LEFT JOIN FETCH c.fuelTypes WHERE c.user.id = :userId") // 1 v
     @EntityGraph(attributePaths = "fuelTypes")  // 2 v
     List<Car> findByUserId(Long userId);
+    Optional<Car> findByIdAndUserId(Long id, Long userId);
     boolean existsByVinCode(String vinCode);
 }

@@ -1,4 +1,4 @@
-package yurlis.carassistantapp.service;
+package yurlis.carassistantapp.service.user;
 
 import yurlis.carassistantapp.dto.authentication.UserRegistrationRequestDto;
 import yurlis.carassistantapp.dto.authentication.UserRegistrationResponseDto;

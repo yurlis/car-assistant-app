@@ -3,7 +3,7 @@ package yurlis.carassistantapp.dto.carphoto;
 import lombok.Data;
 
 @Data
-public class CarPhotoDto {
+public class CarPhotoResponseDto {
     private Long id;
     private String photoUrl;
 }

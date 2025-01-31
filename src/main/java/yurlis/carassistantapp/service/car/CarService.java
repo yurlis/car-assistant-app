@@ -1,4 +1,4 @@
-package yurlis.carassistantapp.service;
+package yurlis.carassistantapp.service.car;
 
 import org.springframework.web.multipart.MultipartFile;
 import yurlis.carassistantapp.dto.car.CarPhotoResponseDto;
@@ -15,7 +15,7 @@ public interface CarService {
     List<CarWithoutPhotosResponseDto> findAllByUserId(Long userId);
     CarWithoutPhotosResponseDto getById(Long id);
     CarWithoutPhotosResponseDto update(Long id, UpdateCarWithoutPhotosRequestDto updateCarWithoutPhotosRequestDto);
-    void deleteById(Long id);
+    void deleteById(Long id, Long userId);
     void deleteCarTransactional(Long id);
     CarPhotoResponseDto uploadPhoto(Long carId, MultipartFile photo);
     void deletePhotoById(Long photoId);

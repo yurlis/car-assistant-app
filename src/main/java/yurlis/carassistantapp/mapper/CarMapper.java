@@ -12,18 +12,17 @@ import yurlis.carassistantapp.dto.car.UpdateCarWithoutPhotosRequestDto;
 import yurlis.carassistantapp.model.Car;
 import yurlis.carassistantapp.model.FuelType;
 
-import java.sql.Timestamp;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(config = MapperConfig.class)
 @Component
-public interface CarMapper {
-    @Mapping(target = "fuelTypesIds", ignore = true) // Автоматично встановлюється в @AfterMapping
+public interface CarMapper extends CommonMapper, CommonTimeMapper {
+    @Mapping(target = "fuelTypesIds", ignore = true)
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(target = "formattedPurchaseDate", expression = "java(formatPurchaseDate(car.getPurchaseDate()))")
     CarWithoutPhotosResponseDto toDto(Car car);
 
-    //@Mapping(target = "carPhotos", ignore = true)
     @Mapping(target = "fuelTypes", ignore = true)
     Car toModel(CreateCarWithoutPhotosRequestDto requestDto);
 
@@ -76,9 +75,5 @@ public interface CarMapper {
                     return fuelType;
                 })
                 .collect(Collectors.toSet());
-    }
-
-    default Long mapTimestampToLong(Timestamp timestamp) {
-        return timestamp != null ? timestamp.getTime() : null;
     }
 }
