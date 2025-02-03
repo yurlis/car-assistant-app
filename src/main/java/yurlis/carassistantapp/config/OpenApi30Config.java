@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(title = "API", version = "v1"),
-        servers = @Server(url = "https://car-assistant-app-production.up.railway.app/api",
+        servers = @Server(url = "${api.server.url}",
                 description = "Production API server")
 )
 @SecurityScheme(
