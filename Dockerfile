@@ -1,18 +1,26 @@
-# Використовуємо офіційний образ JDK 17
-FROM openjdk:17-jdk-alpine
-
-# Встановлюємо робочу директорію в контейнері
+# Використовуємо OpenJDK 17 на базі Alpine
+FROM openjdk:17-jdk-alpine as builder
 WORKDIR /app
 
-# Копіюємо усі файли проєкту (Render сам виконає `git clone`)
+# Встановлюємо Maven (щоб не використовувати mvnw)
+RUN apk add --no-cache maven
+
+# Копіюємо всі файли проєкту в контейнер
 COPY . .
 
-# Збираємо застосунок всередині контейнера (використовуємо Maven)
-RUN ./mvnw clean package -DskipTests
+# Збираємо застосунок всередині контейнера
+RUN mvn clean package -DskipTests
 
-# Запускаємо застосунок
-CMD ["java", "-jar", "target/*.jar"]
+# Створюємо фінальний легковаговий контейнер
+FROM openjdk:17-jdk-alpine
+WORKDIR /app
 
-# Відкриваємо порти
+# Копіюємо зібраний JAR з попереднього етапу
+COPY --from=builder /app/target/*.jar app.jar
+
+# Вказуємо команду для запуску застосунку
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Відкриваємо порти для програми та дебагу
 EXPOSE 8080
 EXPOSE 5005
