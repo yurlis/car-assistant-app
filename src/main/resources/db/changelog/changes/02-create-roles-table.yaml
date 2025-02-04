@@ -15,7 +15,8 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: role
-                  type: enum('ROLE_USER', 'ROLE_ADMIN')
+#                  type: enum('ROLE_USER', 'ROLE_ADMIN')
+                  type: VARCHAR(10)
                   constraints:
                     nullable: false
                     unique: true

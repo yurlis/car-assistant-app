@@ -44,7 +44,8 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: movement_type
-                  type: ENUM('CITY', 'HIGHWAY', 'MIXED')
+                  type: VARCHAR(7)
+#                  type: ENUM('CITY', 'HIGHWAY', 'MIXED')
                   constraints:
                     nullable: false
               - column:
@@ -62,3 +63,6 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
+        - sql:
+            dbms: postgresql
+            sql: "CREATE TYPE movement_type_enum AS ENUM ('CITY', 'HIGHWAY', 'MIXED');"
