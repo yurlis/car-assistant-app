@@ -45,7 +45,7 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: purchase_date
-                  type: DATE
+                  type: TIMESTAMP
                   constraints:
                     nullable: true
               - column:
