@@ -68,6 +68,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
+                "http://localhost:3000",
                 "https://andrii-rykal.github.io",
                 "https://car-assistant-app-production.up.railway.app"
         ));
