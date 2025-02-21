@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import yurlis.carassistantapp.dto.authentication.UserLoginRequestDto;
 import yurlis.carassistantapp.dto.authentication.UserLoginResponseDto;
+import yurlis.carassistantapp.model.User;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class AuthenticationService {
                         )
                 );
         String token = jwtUtil.generateToken(authentication.getName());
-        return new UserLoginResponseDto(token);
+        User loginUser = (User) authentication.getPrincipal();
+        return new UserLoginResponseDto(token, loginUser.getFirstName(), loginUser.getLastName());
     }
 }
