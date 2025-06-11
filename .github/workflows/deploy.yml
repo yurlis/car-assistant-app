@@ -18,6 +18,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
+          port: 2222
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /home/user/projects/car-assistant-app
