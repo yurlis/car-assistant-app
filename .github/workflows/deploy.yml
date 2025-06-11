@@ -10,11 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check GitHub connectivity
-        run: |
-          ping -c 4 github.com
-          nslookup github.com
-
       - name: Checkout repo
         uses: actions/checkout@v3
 
