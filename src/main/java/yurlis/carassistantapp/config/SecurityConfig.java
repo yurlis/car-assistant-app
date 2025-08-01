@@ -69,8 +69,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "https://andrii-rykal.github.io",
-                "https://car-assistant-app-production.up.railway.app"
+                "http://localhost:5173/car-assistance-frontend",
+                "https://bukavyna.github.io/car-assistance-frontend"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Методи HTTP
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
