@@ -1,6 +1,10 @@
 package yurlis.carassistantapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,24 @@ public class AuthenticationController {
     @PostMapping("/registration")
     @Operation(summary = "Register a new user",
             description = "Performs a registration of a new user and add a new user to the DB")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserRegistrationResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad Request – validation failed",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflict – user with this email already exists",
+                    content = @Content(mediaType = "application/json")
+            )
+    })
     @ResponseStatus(HttpStatus.CREATED)
     public UserRegistrationResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {
@@ -43,6 +65,24 @@ public class AuthenticationController {
             summary = "Authenticate a user",
             description = "Performs authentication by validating user credentials and returning an access token."
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK – successfully authenticated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserLoginResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad Request – invalid input data",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized – wrong credentials",
+                    content = @Content
+            )
+    })
     @ResponseStatus(HttpStatus.OK)
     public UserLoginResponseDto login(@RequestBody UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
