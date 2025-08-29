@@ -70,7 +70,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:5173/car-assistance-frontend",
-                "https://bukavyna.github.io/car-assistance-frontend"
+                "https://bukavyna.github.io"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Методи HTTP
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));

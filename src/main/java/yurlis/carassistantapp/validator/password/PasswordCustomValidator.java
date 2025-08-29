@@ -3,25 +3,52 @@ package yurlis.carassistantapp.validator.password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PasswordCustomValidator implements
-        ConstraintValidator<PasswordConstraint, String> {
-    // public static final String PASSWORD_REGEXP =
-    //        "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&.])[A-Za-z\\d@$!%*#?&.]+$.";
-    public static final String PASSWORD_REGEXP =
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&.])[A-Za-z\\d@$!%*#?&.]{8,}$";
-    public static final int MIN_PASSWORD_LENGTH = 8;
+import java.util.regex.Pattern;
 
-    public static final int MAX_PASSWORD_LENGTH = 35;
+public class PasswordCustomValidator implements ConstraintValidator<PasswordConstraint, String> {
+
+    private int min;
+    private int max;
+    private Pattern pattern;
+
+    // Регулярний вираз перевіряє:
+    // - принаймні одну маленьку літеру
+    // - принаймні одну велику літеру
+    // - принаймні одну цифру
+    // - принаймні один спецсимвол із набору @$!%*#?&.
+    private static final String DEFAULT_PASSWORD_REGEXP =
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&.])[A-Za-z\\d@$!%*#?&.]+$";
 
     @Override
-    public void initialize(PasswordConstraint password) {
+    public void initialize(PasswordConstraint constraintAnnotation) {
+        this.min = constraintAnnotation.min();
+        this.max = constraintAnnotation.max();
+        this.pattern = Pattern.compile(DEFAULT_PASSWORD_REGEXP);
     }
 
     @Override
-    public boolean isValid(String password,
-                           ConstraintValidatorContext cxt) {
-        return password != null && password.matches(PASSWORD_REGEXP)
-                && (password.length() >= MIN_PASSWORD_LENGTH)
-                && (password.length() < MAX_PASSWORD_LENGTH);
+    public boolean isValid(String password, ConstraintValidatorContext context) {
+        if (password == null) {
+            // Можна тут вирішити, чи null - валідний (залежить від логіки)
+            return true;
+        }
+
+        if (password.length() < min || password.length() > max) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(
+                    String.format("Password length must be between %d and %d characters", min, max)
+            ).addConstraintViolation();
+            return false;
+        }
+
+        if (!pattern.matcher(password).matches()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(
+                    "Password must contain at least one uppercase letter, one lowercase letter, one digit and one special character (@$!%*#?&.)"
+            ).addConstraintViolation();
+            return false;
+        }
+
+        return true;
     }
 }
